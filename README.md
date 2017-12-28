@@ -1,0 +1,1 @@
+A quantum random number generator for Go.
