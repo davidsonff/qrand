@@ -1,14 +1,14 @@
 // Package qrand provides true random numbers generated from the ANU Quantum Random Numbers Server, https://qrng.anu.edu.au, to which you must have connectivity for true randomness.
-// Randomness from the quantum beyond!!! Fallback to Go's math/rand package in the event of no connectivity, but also return an PsuedoRandomError.
+// Randomness from the quantum beyond!!! Fallback to Go's crypto/rand package in the event of no connectivity, but also return a PsuedoRandomError.
 package qrand
 
 import (
+	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"math/rand"
 	"net/http"
 	"time"
 )
@@ -18,13 +18,13 @@ var webSite = "https://qrng.anu.edu.au/API/jsonI.php"
 //The way their site's api works...
 var ILength = 10    //Number of "packages" to receive
 var ISize = 2       //Number of "items" in those packages
-var IType = "hex16" //Type of those "items"
+var iType = "hex16" //Type of those "items". Not public as changing will definitely break.
 
 // Attempts is the number of times to retry() the GET request if an error occurs.
-var Attempts int = 5
+var Attempts int = 2
 
 // SleepTime is the time to wait between retry() attempts.
-var SleepTime time.Duration = time.Second * 2
+var SleepTime time.Duration = time.Second * 1
 
 // PsuedoRandomError is the error type returned if no complete interaction with the WebSite occurs and a psuedo-random []byte is returned instead.
 // Check for it with "if _, ok := x.(qrand.PsuedoRandomError); ok {..."
@@ -43,7 +43,7 @@ func Get(size int) (out []byte, err error) {
 
 	out = make([]byte, 0, size)
 
-	endPoint := webSite + fmt.Sprintf("?length=%v&type=%v&size=%v", ILength, IType, ISize)
+	endPoint := webSite + fmt.Sprintf("?length=%v&type=%v&size=%v", ILength, iType, ISize)
 
 	var resp *http.Response
 
@@ -114,11 +114,9 @@ func Get(size int) (out []byte, err error) {
 
 	fmt.Println("Falling back to psuedo-random generation...")
 
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-
 	out = out[0:size]
 
-	n, err := r.Read(out)
+	n, err := rand.Read(out)
 	if err != nil || n != size {
 		fmt.Println("Something went wrong with generating the psuedo-random.", err)
 		if err != nil {
