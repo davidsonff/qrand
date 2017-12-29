@@ -34,7 +34,7 @@ func (f PsuedoRandomError) Error() string {
 	return fmt.Sprintf("No connectivity to %v. Generating psuedo-random number instead.", webSite)
 }
 
-// func Get returns a quantum random []byte of size and a nil error, or a psuedo-random []byte of size and an error of type PsuedoRandomError.
+// func Get returns a quantum random []byte of size and a nil error, or a psuedo-random []byte of size and an error of type PsuedoRandomError, or nil and a regular, old error.
 func Get(size int) (out []byte, err error) {
 
 	if size < 1 {
@@ -120,7 +120,7 @@ func Get(size int) (out []byte, err error) {
 	if err != nil || n != size {
 		fmt.Println("Something went wrong with generating the psuedo-random.", err)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 	}
 
