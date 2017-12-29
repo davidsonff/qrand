@@ -28,7 +28,7 @@ var SleepTime time.Duration = time.Second * 1
 
 // PsuedoRandomError is the error type returned if no complete interaction with the WebSite occurs and a psuedo-random []byte is returned instead.
 // Check for it with "if _, ok := x.(qrand.PsuedoRandomError); ok {..."
-type PsuedoRandomError float64
+type PsuedoRandomError struct{}
 
 func (f PsuedoRandomError) Error() string {
 	return fmt.Sprintf("No connectivity to %v. Generating psuedo-random number instead.", webSite)
@@ -124,9 +124,7 @@ func Get(size int) (out []byte, err error) {
 		}
 	}
 
-	var pre PsuedoRandomError = 1.0
-
-	return out, pre
+	return out, PsuedoRandomError{}
 }
 
 // Credit to Alexandre Bourget...
