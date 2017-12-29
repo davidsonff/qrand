@@ -79,9 +79,13 @@ func Get(size int) (out []byte, err error) {
 		jData.RData = make([]string, ILength)
 
 		err = json.Unmarshal(body, &jData)
-
 		if err != nil {
 			fmt.Println("Error unmarshaling HTTPS response JSON.", err)
+			break // Fall back to psuedo-random
+		}
+
+		if jData.RSuccess == false {
+			fmt.Println("Error in data returned from %v", webSite)
 			break // Fall back to psuedo-random
 		}
 
