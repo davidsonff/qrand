@@ -1,5 +1,5 @@
 // Package qrand provides true random numbers generated from the ANU Quantum Random Numbers Server, https://qrng.anu.edu.au, to which you must have connectivity for true randomness.
-// Randomness from the quantum beyond!!! Fallback to Go's crypto/rand package in the event of no connectivity, but also return a PsuedoRandomError.
+// Randomness from the quantum beyond!!! Fallback to Go's crypto/rand package in the event of no connectivity, but also return a PseudoRandomError.
 package qrand
 
 import (
@@ -26,15 +26,15 @@ var Attempts int = 2
 // SleepTime is the time to wait between retry() attempts.
 var SleepTime time.Duration = time.Second * 1
 
-// PsuedoRandomError is the error type returned if no complete interaction with the WebSite occurs and a psuedo-random []byte is returned instead.
-// Check for it with "if _, ok := x.(qrand.PsuedoRandomError); ok {..."
-type PsuedoRandomError struct{}
+// PseudoRandomError is the error type returned if no complete interaction with the WebSite occurs and a pseudo-random []byte is returned instead.
+// Check for it with "if _, ok := x.(qrand.PseudoRandomError); ok {..."
+type PseudoRandomError struct{}
 
-func (f PsuedoRandomError) Error() string {
-	return fmt.Sprintf("No connectivity to %v. Generating psuedo-random number instead.", webSite)
+func (f PseudoRandomError) Error() string {
+	return fmt.Sprintf("No connectivity to %v. Generating pseudo-random number instead.", webSite)
 }
 
-// func Get returns a quantum random []byte of size and a nil error, or a psuedo-random []byte of size and an error of type PsuedoRandomError, or nil and a regular, old error.
+// func Get returns a quantum random []byte of size and a nil error, or a pseudo-random []byte of size and an error of type PseudoRandomError, or nil and a regular, old error.
 func Get(size int) (out []byte, err error) {
 
 	if size < 1 {
@@ -64,14 +64,14 @@ func Get(size int) (out []byte, err error) {
 		})
 		if err != nil {
 			fmt.Println("Error in GET request.", err)
-			break //Fall back to psuedo-random
+			break //Fall back to pseudo-random
 		}
 
 		body, err := ioutil.ReadAll(resp.Body)
 		resp.Body.Close()
 		if err != nil {
 			fmt.Println("Error reading HTTPS response.", err)
-			break // Fall back to psuedo-random
+			break // Fall back to pseudo-random
 		}
 
 		var jData Data
@@ -81,12 +81,12 @@ func Get(size int) (out []byte, err error) {
 		err = json.Unmarshal(body, &jData)
 		if err != nil {
 			fmt.Println("Error unmarshaling HTTPS response JSON.", err)
-			break // Fall back to psuedo-random
+			break // Fall back to pseudo-random
 		}
 
 		if jData.RSuccess == false {
 			fmt.Println("Error in data returned from %v", webSite)
-			break // Fall back to psuedo-random
+			break // Fall back to pseudo-random
 		}
 
 		for j := 0; j < ILength; j++ {
@@ -94,7 +94,7 @@ func Get(size int) (out []byte, err error) {
 			jDataBytes, err := hex.DecodeString(jData.RData[j])
 			if err != nil {
 				fmt.Println("Error decoding HTTPS response hex data.", err)
-				break // Fall back to psuedo-random
+				break // Fall back to pseudo-random
 			}
 
 			out = append(out, jDataBytes...)
@@ -116,19 +116,19 @@ func Get(size int) (out []byte, err error) {
 
 	// Falling back to math/rand
 
-	fmt.Println("Falling back to psuedo-random generation...")
+	fmt.Println("Falling back to pseudo-random generation...")
 
 	out = out[0:size]
 
 	n, err := rand.Read(out)
 	if err != nil || n != size {
-		fmt.Println("Something went wrong with generating the psuedo-random.", err)
+		fmt.Println("Something went wrong with generating the pseudo-random.", err)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	return out, PsuedoRandomError{}
+	return out, PseudoRandomError{}
 }
 
 // Credit to Alexandre Bourget...
