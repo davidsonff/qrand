@@ -51,7 +51,7 @@ func (r *Reader) Read(p []byte) (n int, err error) {
 		p[i] = b
 	}
 
-	return len(p), err
+	return len(x), err
 }
 
 // func Get returns a quantum random []byte of size and a nil error, or a pseudo-random []byte of size and an error of type PseudoRandomError, or nil and a regular, old error.
