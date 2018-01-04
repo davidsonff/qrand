@@ -30,8 +30,30 @@ var SleepTime time.Duration = time.Second * 1
 // Check for it with "if _, ok := x.(qrand.PseudoRandomError); ok {..."
 type PseudoRandomError struct{}
 
+// Reader is a drop-in, true random number generator replacement for crypto/rand's Reader.
+type Reader struct {
+	read []byte
+}
+
 func (f PseudoRandomError) Error() string {
 	return fmt.Sprintf("No connectivity to %v. Generating pseudo-random number instead.", webSite)
+}
+
+func (r *Reader) Read(p []byte) (n int, err error) {
+
+	l := len(p)
+
+	if l == 0 {
+		return 0, nil
+	}
+
+	x, err := Get(l)
+
+	for i, b := range x {
+		p[i] = b
+	}
+
+	return len(p), err
 }
 
 // func Get returns a quantum random []byte of size and a nil error, or a pseudo-random []byte of size and an error of type PseudoRandomError, or nil and a regular, old error.

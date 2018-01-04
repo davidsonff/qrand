@@ -21,3 +21,17 @@ func TestGet(t *testing.T) {
 		})
 	}
 }
+
+func TestReader(t *testing.T) {
+
+	out := make([]byte, 20)
+
+	var x Reader
+
+	cnt, err := x.Read(out)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println("Count:", cnt, "Result:", out)
+}
