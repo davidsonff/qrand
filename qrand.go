@@ -31,9 +31,7 @@ var SleepTime time.Duration = time.Second * 1
 type PseudoRandomError struct{}
 
 // Reader is a drop-in, true random number generator replacement for crypto/rand's Reader.
-type Reader struct {
-	read []byte
-}
+type Reader struct{}
 
 func (f PseudoRandomError) Error() string {
 	return fmt.Sprintf("No connectivity to %v. Generating pseudo-random number instead.", webSite)
