@@ -105,7 +105,7 @@ func Get(size int) (out []byte, err error) {
 		}
 
 		if jData.RSuccess == false {
-			fmt.Println("Error in data returned from %v", webSite)
+			fmt.Println("Error in data returned from: ", webSite)
 			break // Fall back to pseudo-random
 		}
 
